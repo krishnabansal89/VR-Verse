@@ -33,7 +33,7 @@ public class GyroHandler : MonoBehaviour
             rotation = GyroToUnity(gyro.attitude);
             transform.localRotation = rotation;
             text.SetText(transform.localRotation.ToString());
-            _transform = transform;
+            _transform.localRotation = rotation;
 
         }
     }
