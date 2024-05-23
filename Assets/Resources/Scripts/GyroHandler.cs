@@ -13,6 +13,7 @@ public class GyroHandler : MonoBehaviour
     private bool isGyroSupported;
     public TMP_Text text ;
     private Quaternion rotation;
+    public Transform _transform;
     void Start()
     {
         text.SetText("Hello There");
@@ -32,6 +33,8 @@ public class GyroHandler : MonoBehaviour
             rotation = GyroToUnity(gyro.attitude);
             transform.localRotation = rotation;
             text.SetText(transform.localRotation.ToString());
+            _transform = transform;
+
         }
     }
 
