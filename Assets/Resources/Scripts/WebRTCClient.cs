@@ -69,6 +69,7 @@ public class WebRTCClient : MonoBehaviour
 
     void OnMessage(object sender, MessageEventArgs e)
     {
+        Debug.Log(e.Data);
         if (e.Data.Contains("answer"))
         {
             var answer = JsonUtility.FromJson<RTCSessionDescription>(e.Data);
@@ -83,20 +84,35 @@ public class WebRTCClient : MonoBehaviour
 
     IEnumerator CreateOffer()
     {
-        var offerOptions = new RTCOfferAnswerOptions
+        var offerOptions = new RTCOfferAnswerOptions();
+
+        // Add tracks to peer connection
+        var track = (GetComponent<Camera>()).CaptureStreamTrack(1280, 720);
+        peerConnection.AddTrack(track);
+
+
+        var offerOp = peerConnection.CreateOffer(ref offerOptions);
+        yield return offerOp;
+
+        if (offerOp.IsError)
         {
-            iceRestart = false,
-            voiceActivityDetection = false,
-            
-        };
+            Debug.LogError($"Error creating offer: {offerOp.Error.message}");
+            yield break;
+        }
 
+        RTCSessionDescription offer = offerOp.Desc;
+        var setLocalDescOp = peerConnection.SetLocalDescription(ref offer);
+        yield return setLocalDescOp;
 
-        var offer = peerConnection.CreateOffer(ref offerOptions);
-        yield return offer;
-        var _offer = offer.Desc;
-        peerConnection.SetLocalDescription(ref _offer);
-        ws.Send(JsonUtility.ToJson(_offer));
+        if (setLocalDescOp.IsError)
+        {
+            Debug.LogError($"Error setting local description: {setLocalDescOp.Error.message}");
+            yield break;
+        }
+
+        ws.Send(JsonUtility.ToJson(offer));
     }
+
 
     void OnDestroy()
     {

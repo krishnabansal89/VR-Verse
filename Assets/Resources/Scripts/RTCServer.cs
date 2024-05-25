@@ -54,7 +54,8 @@ public class RTCServer : MonoBehaviour
         if (e.Data != null)
         {
             Debug.Log("Message Recieved");
-            if(e.Data.Contains("answer"))
+            Debug.Log(e.Data);
+            if(e.Data.Contains("offer"))
             {
                 var offer = JsonUtility.FromJson<RTCSessionDescription>(e.Data);
                 _peerConnection.SetRemoteDescription(ref offer);
