@@ -6,6 +6,7 @@ using TMPro;
 using WebSocketSharp;
 using Unity.VisualScripting;
 using System;
+using UnityEngine.AdaptivePerformance.Provider;
 
 public class GyroHandler : MonoBehaviour
 {
@@ -15,15 +16,19 @@ public class GyroHandler : MonoBehaviour
     private Quaternion rotation;
     public Transform _transform;
     private WebSocket ws;
+    private Texture2D texture;
+    public RawImage rawImage;
 
     void Awake()
     {
         try
         {
-            ws = new WebSocket("ws://192.168.121.168:8080/Gyro");
+            ws = new WebSocket("ws://192.168.175.180:8080/Gyro");
             ws.Connect();
-            StartCoroutine(SendGyroData());
+            ws.OnMessage += OnMessage;
+            //StartCoroutine(SendGyroData());
             text.SetText("Hello There");
+            texture = new Texture2D(2, 2);
             isGyroSupported = SystemInfo.supportsGyroscope;
             if (isGyroSupported)
             {
@@ -69,13 +74,22 @@ public class GyroHandler : MonoBehaviour
                 };
                 string jsonData = JsonUtility.ToJson(gyroData);
                 Debug.Log("GyroData JSON: " + jsonData);
-                ws.Send(jsonData);
+                //ws.Send(jsonData);
                 Debug.Log("GyroData Sent");
             }
 
             yield return new WaitForSeconds(1.0f / 120); // Send data at ~10 FPS
         }
     }
+    private void OnMessage(object sender, MessageEventArgs e)
+    {
+        if (e.RawData != null)
+        {
+            texture.LoadImage(e.RawData);
+            rawImage.texture = texture;
+        }
+    }
+
 }
 
 [Serializable]
