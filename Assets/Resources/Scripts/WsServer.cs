@@ -37,7 +37,7 @@ public class WsServer : MonoBehaviour
     public Quaternion GyroRotation;
     void Start()
     {
-        wss = new WebSocketServer("ws://0.0.0.0:8080");
+        wss = new WebSocketServer("ws://0.0.0.0:8088");
         wss.AddWebSocketService<GyroService>("/Gyro");
         wss.Start();
         Debug.Log("WebSocket server started on ws://localhost:8080");

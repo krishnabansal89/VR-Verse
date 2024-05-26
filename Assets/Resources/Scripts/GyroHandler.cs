@@ -23,10 +23,9 @@ public class GyroHandler : MonoBehaviour
     {
         try
         {
-            ws = new WebSocket("ws://192.168.175.180:8080/Gyro");
+            ws = new WebSocket("ws://192.168.175.180:8088/Gyro");
             ws.Connect();
-            ws.OnMessage += OnMessage;
-            //StartCoroutine(SendGyroData());
+            StartCoroutine(SendGyroData());
             text.SetText("Hello There");
             texture = new Texture2D(2, 2);
             isGyroSupported = SystemInfo.supportsGyroscope;
@@ -74,19 +73,11 @@ public class GyroHandler : MonoBehaviour
                 };
                 string jsonData = JsonUtility.ToJson(gyroData);
                 Debug.Log("GyroData JSON: " + jsonData);
-                //ws.Send(jsonData);
+                ws.Send(jsonData);
                 Debug.Log("GyroData Sent");
             }
 
             yield return new WaitForSeconds(1.0f / 120); // Send data at ~10 FPS
-        }
-    }
-    private void OnMessage(object sender, MessageEventArgs e)
-    {
-        if (e.RawData != null)
-        {
-            texture.LoadImage(e.RawData);
-            rawImage.texture = texture;
         }
     }
 

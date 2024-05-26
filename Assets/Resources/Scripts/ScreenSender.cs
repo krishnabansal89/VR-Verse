@@ -20,13 +20,13 @@ public class ScreenSender : MonoBehaviour
         while (true)
         {
             yield return new WaitForEndOfFrame();
-            Destroy(screenImage);
+            Debug.Log("Kuch to aaya he bc");
 
             try
             {
                 // Capture the screen
-                Texture2D screenImage = ScreenCapture.CaptureScreenshotAsTexture();
-
+                screenImage.ReadPixels(new Rect(0, 0, Screen.width, Screen.height), 0, 0);
+                screenImage.Apply();
                 byte[] imageData = screenImage.EncodeToJPG(); // Use EncodeToPNG() if you prefer PNG
 
                 // Send image data through WebSocket
